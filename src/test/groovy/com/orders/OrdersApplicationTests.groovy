@@ -1,4 +1,4 @@
-package com.roam.orders
+package com.orders
 
 import org.junit.Test
 import org.junit.runner.RunWith
