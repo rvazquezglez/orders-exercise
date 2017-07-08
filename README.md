@@ -1,100 +1,25 @@
 # Orders exercise
 
-## Initializing
-
-The first thing I did was going to [Spring Initializr](https://start.spring.io/) to bootstrap the project.
-
-Then I created the entities for the model in `com.orders.models` and setup a `CrudRepository` with `RepositoryRestResource` annotation in `com.orders.repository`.
-
-I had some issues with the naming because `order` is a reserved word in sql, so I renamed the tables.
-
-I needed to configure `cascade all` in order to save some test data from `OrdersApplication`.
-
-At this point the application works with default REST endpoints from `RepositoryRestResource`:
-
-If I send a GET request with curl I get this:
-
+You can start the application running the spring boot app from gradle wrapper:
 ```
-$ curl -X GET "http://localhost:8080/orders"
-{
- "_embedded" : {
-   "orders" : [ {
-     "customer" : {
-       "name" : null,
-       "lastName" : null
-     },
-     "totalAmount" : 100.0,
-     "date" : null,
-     "itemsPurchased" : [ {
-       "name" : "book",
-       "amount" : 40.0
-     }, {
-       "name" : "rechargeable batteries",
-       "amount" : 60.0
-     } ],
-     "paymentsReceived" : [ ],
-     "_links" : {
-       "self" : {
-         "href" : "http://localhost:8080/orders/1"
-       },
-       "order" : {
-         "href" : "http://localhost:8080/orders/1"
-       }
-     }
-   } ]
- },
- "_links" : {
-   "self" : {
-     "href" : "http://localhost:8080/orders"
-   },
-   "profile" : {
-     "href" : "http://localhost:8080/profile/orders"
-   }
- }
-}%
-
-
-$ curl -X GET "http://localhost:8080/orders/1"
-{
- "customer" : {
-   "name" : null,
-   "lastName" : null
- },
- "totalAmount" : 100.0,
- "date" : null,
- "itemsPurchased" : [ {
-   "name" : "book",
-   "amount" : 40.0
- }, {
-   "name" : "rechargeable batteries",
-   "amount" : 60.0
- } ],
- "paymentsReceived" : [ ],
- "_links" : {
-   "self" : {
-     "href" : "http://localhost:8080/orders/1"
-   },
-   "order" : {
-     "href" : "http://localhost:8080/orders/1"
-   }
- }
-}%
+$./gradlew bootRun
 ```
 
-This works fine for a prototype but is not enough for a production application.
+To run the tests just do:
+```
+$./gradlew test
+```
 
-## DB schema and DB migrations
+You can save a new entity sending a POST request like this:
+```
+$ curl -H "Content-Type: application/json" -d '{"totalAmount":167.0,"itemsPurchased":[{"name":"The hitchhiker guide to the galaxy","amount":167.0}]}' http://localhost:8080/order/
+{"id":3,"customer":null,"totalAmount":167.0,"date":null,"itemsPurchased":[{"id":2,"name":"The hitchhiker guide to the galaxy","amount":167.0}],"paymentsReceived":null}%
+```
 
-I generated the schema adding these properties to application.yml
+If you want to list all the orders you can do this:
+```
+$ curl -H "Content-Type: application/json" http://localhost:8080/orders/
+[{"id":1,"customer":{"id":1,"name":"John","lastName":"Lennon"},"totalAmount":100.0,"date":{"year":2017,"month":"JUNE","era":"CE","dayOfYear":157,"dayOfWeek":"TUESDAY","leapYear":false,"dayOfMonth":6,"monthValue":6,"chronology":{"id":"ISO","calendarType":"iso8601"}},"itemsPurchased":[{"id":1,"name":"book","amount":100.0}],"paymentsReceived":[{"id":1,"date":{"year":2017,"month":"JUNE","era":"CE","dayOfYear":157,"dayOfWeek":"TUESDAY","leapYear":false,"dayOfMonth":6,"monthValue":6,"chronology":{"id":"ISO","calendarType":"iso8601"}},"amount":100.0}]},{"id":3,"customer":null,"totalAmount":167.0,"date":null,"itemsPurchased":[{"id":2,"name":"The hitchhiker guide to the galaxy","amount":167.0}],"paymentsReceived":[]}]%
+```
 
-spring.jpa.properties.javax.persistence.schema-generation:
-  create-source: metadata
-  scripts:
-    action: create
-    create-target: src/main/resources/db/migration/V1__init.sql
-
-I noticed that it generated a join table that I don't wanted, that was because I didn't specified a join column, so I added that.
-
-I wanted to keep track of the db changes with a migration tool, so I added the flyway dependency and configured it.
-
-I added some unit test for flyway and repositories.
+You can check the changes evolution looking at git history or if you want more detail check it [here](CHANGE_LOG.md)
