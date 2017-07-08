@@ -82,3 +82,19 @@ $ curl -X GET "http://localhost:8080/orders/1"
 ```
 
 This works fine for a prototype but is not enough for a production application.
+
+## DB schema and DB migrations
+
+I generated the schema adding these properties to application.yml
+
+spring.jpa.properties.javax.persistence.schema-generation:
+  create-source: metadata
+  scripts:
+    action: create
+    create-target: src/main/resources/db/migration/V1__init.sql
+
+I noticed that it generated a join table that I don't wanted, that was because I didn't specified a join column, so I added that.
+
+I wanted to keep track of the db changes with a migration tool, so I added the flyway dependency and configured it.
+
+I added some unit test for flyway and repositories.
