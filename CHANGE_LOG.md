@@ -109,3 +109,7 @@ I created `OrderValidator` to validate the orders in the controller and added `h
 
 ## Caches
 And last I enabled caches to avoid hitting the database on each call to get all orders.
+
+## Validation again
+
+I slightly refactored the way I was using validation to make easier add new validations, just need to add the validator in `OrdersApplication.validatorList` and added better asserts to current validator.

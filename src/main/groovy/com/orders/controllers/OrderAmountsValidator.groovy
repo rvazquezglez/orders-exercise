@@ -1,12 +1,10 @@
 package com.orders.controllers
 
 import com.orders.models.Order
-import org.springframework.stereotype.Component
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
-@Component
-class OrderValidator implements Validator {
+class OrderAmountsValidator implements Validator {
     @Override
     boolean supports(Class<?> clazz) {
         return Order.class == clazz

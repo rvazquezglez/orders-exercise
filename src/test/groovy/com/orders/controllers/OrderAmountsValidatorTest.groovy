@@ -1,23 +1,22 @@
 package com.orders.controllers
 
+import com.orders.models.Item
 import com.orders.models.Order
 import org.junit.Before
 import org.junit.Test
-import org.springframework.validation.ValidationUtils
 import org.springframework.validation.BindException
+import org.springframework.validation.ValidationUtils
 
 import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.Matchers.hasItem
-import static org.hamcrest.Matchers.hasProperty
-import static org.hamcrest.Matchers.is
+import static org.hamcrest.Matchers.*
 
-class OrderValidatorTest {
+class OrderAmountsValidatorTest {
 
-    OrderValidator orderValidator
+    OrderAmountsValidator orderValidator
 
     @Before
     void setUp() {
-        orderValidator = new OrderValidator()
+        orderValidator = new OrderAmountsValidator()
     }
 
     @Test
@@ -41,7 +40,11 @@ class OrderValidatorTest {
 
     @Test
     void testOrderAmountsDontMatch() {
-        def order = new Order()
+        def order = new Order(totalAmount: 543,
+                itemsPurchased: [
+                        new Item(amount: 421),
+                        new Item(amount: 900)
+                ])
         def errors = new BindException(order, "order")
         ValidationUtils.invokeValidator(orderValidator, order, errors)
 
@@ -54,6 +57,16 @@ class OrderValidatorTest {
 
     @Test
     void testValidOrder() {
+        def order = new Order(totalAmount: 543,
+                itemsPurchased: [
+                        new Item(amount: 421),
+                        new Item(amount: 122)
+                ])
+        def errors = new BindException(order, "order")
+        ValidationUtils.invokeValidator(orderValidator, order, errors)
+
+        assertThat(errors.getAllErrors(), is(empty()))
+
     }
 
 }

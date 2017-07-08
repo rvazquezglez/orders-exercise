@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
+import org.springframework.validation.Validator
 import org.springframework.web.bind.annotation.*
+
+import javax.annotation.Resource
 
 @RestController
 @Slf4j
@@ -17,8 +20,8 @@ class OrderController {
     @Autowired
     OrderService orderService
 
-    @Autowired
-    OrderValidator orderValidator
+    @Resource(name = 'validatorList')
+    List<Validator> validatorList
 
     @RequestMapping(value = "/orders", method = RequestMethod.GET)
     def getAllOrders() {
@@ -29,7 +32,7 @@ class OrderController {
     @RequestMapping(value = "/order", method = RequestMethod.POST)
     def saveOrder(@RequestBody Order order, BindingResult bindingResult) {
 
-        orderValidator.validate(order, bindingResult)
+        validatorList.forEach({ validator -> validator.validate(order, bindingResult) })
 
         if (bindingResult.hasErrors()) {
             throw new InvalidOrderException(errorList: bindingResult.getAllErrors())
