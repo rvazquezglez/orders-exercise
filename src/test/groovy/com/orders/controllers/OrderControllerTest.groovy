@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @ActiveProfiles("controllerTest")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,7 +44,7 @@ class OrderControllerTest {
     }
 
     @Test
-    void verifyAllOrders() {
+    void testAllOrders() {
         when(orderRepository.findAll()).thenReturn([new Order()])
 
         mockMvc.perform(
@@ -55,16 +56,30 @@ class OrderControllerTest {
     }
 
     @Test
-    void verifySaveOrder() {
+    void testSaveOrder() {
         when(orderRepository.save(any())).thenReturn(new Order(id: 123))
 
         mockMvc.perform(
                 MockMvcRequestBuilders
                         .post("/order/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":null,\"customer\":null,\"totalAmount\":0.0,\"date\":null,\"itemsPurchased\":null,\"paymentsReceived\":null}")
+                        .content('{"id":null,"customer":null,"totalAmount":100.0,"date":null,"itemsPurchased":[{"id":1,"name":"book","amount":100.0}],"paymentsReceived":null}')
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath('$.id').value(123))
-                .andDo(print());
+                .andDo(print())
+    }
+
+    @Test
+    void testInvalidOrder() throws Exception {
+        when(orderRepository.save(any())).thenReturn(new Order(id: 123))
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .post("/order/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content('{"id":null,"customer":null,"totalAmount":0.0,"date":null,"itemsPurchased":null,"paymentsReceived":null}')
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andDo(print())
     }
 }
