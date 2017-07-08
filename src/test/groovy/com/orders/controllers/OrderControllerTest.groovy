@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@ActiveProfiles("controllerTest")
+@ActiveProfiles("testProfile")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = OrdersApplication.class)
 @SpringBootTest

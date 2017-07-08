@@ -1,4 +1,4 @@
-package com.orders.controllers
+package com.orders
 
 import com.orders.models.Order
 import com.orders.repositories.OrderRepository
@@ -8,10 +8,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 
-@Profile("controllerTest")
+@Profile("testProfile")
 @Configuration
-class ControllerTestConfiguration {
+class TestConfiguration {
 
+    @SuppressWarnings(["GrMethodMayBeStatic", "GroovyUnusedDeclaration"])
     @Bean
     @Primary
     OrderRepository orderRepository(){
